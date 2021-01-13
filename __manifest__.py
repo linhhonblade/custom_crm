@@ -20,12 +20,12 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
-                'contacts'],
+                'contacts', 'sale', 'sales_team'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
-        'views/contact_views.xml'
+        'views/contact_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
