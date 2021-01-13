@@ -34,6 +34,7 @@
 
 <!--    Add context to origin Contact action window-->
     <record id="contacts.action_contacts" model="ir.actions.act_window">
+        <field name="Contacts All"
         <field name="context">
             {'default_is_company': True,
             'default_user_id': uid}
