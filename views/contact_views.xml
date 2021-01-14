@@ -85,7 +85,7 @@
               name="Contacts"
               action="custom_crm.action_contacts_sales"
               parent="contacts.menu_contacts"
-              sequence="2"/>
+              sequence="1"/>
 
     <menuitem id="res_partner_menu_search"
               name="Search"

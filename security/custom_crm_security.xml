@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
 
-    <record id=""
+<odoo>
+<data>
+    <record model="ir.module.category" id="module_category_custom_crm">
+        <field name="name">Custom CRM</field>
+        <field name="description">Manage permission for the customization</field>
+    </record>
+
+    <record model="res.groups" id="group_custom_crm_contacts_user">
+        <field name="name">User: Own Contacts</field>
+        <field name="category_id" ref="module_category_custom_crm"/>
+        <field name="comment">The user will have access to contact that he/she is responsible for</field>
+    </record>
+
+    <record model="res.groups" id="group_custom_crm_contacts_manager">
+        <field name="name">Manager: All Contacts</field>
+        <field name="category_id" ref="module_category_custom_crm"/>
+        <field name="comment">The user will have access to full Contacts App</field>
+    </record>
+
+    <record id="res_partner_menu_contacts_sales" model="ir.ui.menu">
+        <field name="name">Contacts</field>
+        <field eval="[(6,0,[ref('custom_crm.group_custom_crm_contacts_user')])]"/>
+    </record>
+</data>
+
 </odoo>
