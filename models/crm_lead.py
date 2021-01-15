@@ -62,7 +62,7 @@ class Lead(models.Model):
             try:  # avoid to make an exists, lets be optimistic and try to read it.
                 if user.active:
                     result.append((user.partner_id.id, default_subtype_ids,
-                             'mail.message_user_assigned' if user != self.env.user else False))
+                             'custom_crm.message_am_assigned' if user != self.env.user else False))
             except:
                 pass
 
@@ -74,7 +74,7 @@ class Lead(models.Model):
             try:  # avoid to make an exists, lets be optimistic and try to read it.
                 if user.active:
                     result.append((user.partner_id.id, default_subtype_ids,
-                                   'mail.message_user_assigned' if user != self.env.user else False))
+                                   'mail.message_pmo_assigned' if user != self.env.user else False))
             except:
                 pass
 
