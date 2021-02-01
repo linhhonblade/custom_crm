@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from odoo import models, fields
+from odoo import models, fields, api
 
 _logger = logging.getLogger(__name__)
 
@@ -15,8 +15,8 @@ class Lead(models.Model):
                             compute="_compute_partner_id_values", store=True, readonly=False)
     skype = fields.Char('Skype', help="Skype of the contact",
                             compute="_compute_partner_id_values", store=True, readonly=False)
-    am_id = fields.Many2one('res.users', string='AM', index=True, tracking=True, default=lambda self: self.env.user)
-    pmo_id = fields.Many2one('res.users', string='PMO', index=True, tracking=True, default=lambda self: self.env.user)
+    am_id = fields.Many2one('res.users', string='AM', index=True, tracking=True)
+    pmo_id = fields.Many2one('res.users', string='PMO', index=True, tracking=True)
 
     def _message_auto_subscribe_followers(self, updated_values, default_subtype_ids):
         """ Optional method to override in addons inheriting from mail.thread.
@@ -80,3 +80,9 @@ class Lead(models.Model):
                 pass
 
         return result
+
+    @api.onchange('am_id')
+    @api.model
+    def onchange_am_id(self):
+        users = self.env.ref('custom_crm.group_sale_am').users.ids
+        return {'domain': {'am_id': [('id', 'in', users)]}}

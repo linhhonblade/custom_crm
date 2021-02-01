@@ -27,7 +27,8 @@
         # 'security/ir.model.access.csv',
         'views/contact_views.xml',
         'views/crm_lead_views.xml',
-        'data/custom_crm_data.xml'
+        'data/custom_crm_data.xml',
+        'security/custom_crm_security.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
