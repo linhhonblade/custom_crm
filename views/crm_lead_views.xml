@@ -15,8 +15,9 @@
             <xpath expr="//group/group[@name='opportunity_info']" position="after">
                 <group name="opportunity_related_users"
                        attrs="{'invisible': [('type', '=', 'lead')]}">
-                    <field name="am_id" domain="[('share', '=', False)]"
-                           widget="many2one_avatar_user"/>
+                    <field name="am_id"
+                           domain="[('share', '=', False), ('is_am', '=', True)]"
+                           widget="selection"/>
 <!--                    <field name="pmo_id" domain="[('share', '=', False)]"-->
 <!--                           widget="many2one_avatar_user"/>-->
                 </group>

@@ -81,8 +81,8 @@ class Lead(models.Model):
 
         return result
 
-    @api.onchange('am_id')
-    @api.model
-    def onchange_am_id(self):
-        users = self.env.ref('custom_crm.group_sale_am').users.ids
-        return {'domain': {'am_id': [('id', 'in', users)]}}
+    # @api.onchange('am_id')
+    # @api.model
+    # def onchange_am_id(self):
+    #     users = self.env.ref('custom_crm.group_sale_am').users.ids
+    #     return {'domain': {'am_id': [('id', 'in', users)]}}
