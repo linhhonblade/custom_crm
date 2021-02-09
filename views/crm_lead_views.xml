@@ -7,9 +7,10 @@
         <field name="arch" type="xml">
             <xpath expr="//group/group[@name='opportunity_partner']">
                 <field name="website" widget="url" placeholder="e.g. http://www.odoo.com"/>
-                <field name="linkedin" class="oe_inline"/>
+                <field name="linkedin" widget="url"/>
                 <field name="facebook" widget="url"/>
-                <field name="skype" />
+                <field name="skype"/>
+                <field name="whatsapp"/>
             </xpath>
 
             <xpath expr="//group/group[@name='opportunity_info']" position="after">

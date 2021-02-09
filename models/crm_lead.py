@@ -17,6 +17,16 @@ PARTNER_FIELDS_TO_SYNC = [
     'whatsapp'
 ]
 
+# Subset of partner fields: sync all or none to avoid mixed addresses
+PARTNER_ADDRESS_FIELDS_TO_SYNC = [
+    'street',
+    'street2',
+    'city',
+    'zip',
+    'state_id',
+    'country_id',
+]
+
 class Lead(models.Model):
     _order = "id desc, priority"
     _inherit = "crm.lead"
@@ -101,3 +111,24 @@ class Lead(models.Model):
     # def onchange_am_id(self):
     #     users = self.env.ref('custom_crm.group_sale_am').users.ids
     #     return {'domain': {'am_id': [('id', 'in', users)]}}
+
+    def _prepare_values_from_partner(self, partner):
+        # Sync all address fields from partner, or none, to avoid mixing them.
+        if any(partner[f] for f in PARTNER_ADDRESS_FIELDS_TO_SYNC):
+            values = {f: partner[f] for f in PARTNER_ADDRESS_FIELDS_TO_SYNC}
+        else:
+            values = {f: self[f] for f in PARTNER_ADDRESS_FIELDS_TO_SYNC}
+
+        # For other fields, get the info from the partner, but only if set
+        values.update({f: partner[f] or self[f] for f in PARTNER_FIELDS_TO_SYNC})
+
+        # Fields with specific logic
+        partner_name = partner.parent_id.name
+        if not partner_name and partner.is_company:
+            partner_name = partner.name
+        contact_name = False if partner.is_company else partner.name
+        values.update({
+            'partner_name': partner_name or self.partner_name,
+            'contact_name': contact_name or self.contact_name,
+        })
+        return self._convert_to_write(values)

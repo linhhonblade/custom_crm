@@ -7,7 +7,7 @@
         <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//group/group/field[@name='website']" position="after">
-                <field name="linkedin" class="oe_inline"/>
+                <field name="linkedin" widget="url"/>
                 <field name="skype"/>
                 <field name="facebook" widget="url"/>
                 <field name="whatsapp"/>
