@@ -27,6 +27,7 @@
         # 'security/ir.model.access.csv',
         'views/contact_views.xml',
         'views/crm_lead_views.xml',
+        'views/res_partner_views.xml',
         'data/custom_crm_data.xml',
         'security/custom_crm_security.xml'
     ],

@@ -5,6 +5,18 @@ from odoo import models, fields, api
 
 _logger = logging.getLogger(__name__)
 
+# Subset of partner fields: sync any of those
+PARTNER_FIELDS_TO_SYNC = [
+    'mobile',
+    'title',
+    'function',
+    'website',
+    'linkedin',
+    'facebook',
+    'skype',
+    'whatsapp'
+]
+
 class Lead(models.Model):
     _order = "id desc, priority"
     _inherit = "crm.lead"
@@ -15,6 +27,9 @@ class Lead(models.Model):
                             compute="_compute_partner_id_values", store=True, readonly=False)
     skype = fields.Char('Skype', help="Skype of the contact",
                             compute="_compute_partner_id_values", store=True, readonly=False)
+    whatsapp = fields.Char('WhatsApp', help="WhatsApp of the contact",
+                          compute="_compute_partner_id_values", store=True, readonly=False)
+
     am_id = fields.Many2one('res.users', string='AM', index=True, tracking=True)
     pmo_id = fields.Many2one('res.users', string='PMO', index=True, tracking=True)
 
