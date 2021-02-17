@@ -5,6 +5,12 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//group/group[@name='lead_partner']">
+                <field name="linkedin" widget="url" placeholder="e.g. http://www.odoo.com"/>
+                <field name="facebook" widget="url"/>
+                <field name="skype"/>
+                <field name="whatsapp"/>
+            </xpath>
             <xpath expr="//group/group[@name='opportunity_partner']">
                 <field name="website" widget="url" placeholder="e.g. http://www.odoo.com"/>
                 <field name="linkedin" widget="url"/>

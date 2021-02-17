@@ -1,9 +1,44 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from odoo import models, fields, api
+from odoo import models, fields, _, tools
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
+
+CRM_LEAD_FIELDS_TO_MERGE = [
+    'name',
+    'partner_id',
+    'campaign_id',
+    'company_id',
+    'country_id',
+    'team_id',
+    'state_id',
+    'stage_id',
+    'medium_id',
+    'source_id',
+    'user_id',
+    'title',
+    'city',
+    'contact_name',
+    'description',
+    'mobile',
+    'partner_name',
+    'phone',
+    'probability',
+    'expected_revenu',
+    'street',
+    'street2',
+    'zip',
+    'create_date',
+    'date_action_las',
+    'email_from',
+    'email_cc',
+    'website',
+    'linkedin',
+    'facebook',
+    'skype',
+    'whatsapp']
 
 # Subset of partner fields: sync any of those
 PARTNER_FIELDS_TO_SYNC = [
@@ -112,6 +147,7 @@ class Lead(models.Model):
     #     users = self.env.ref('custom_crm.group_sale_am').users.ids
     #     return {'domain': {'am_id': [('id', 'in', users)]}}
 
+    # rewrite the whole function with new PARTNER_FIELDS_TO_SYNC list
     def _prepare_values_from_partner(self, partner):
         # Sync all address fields from partner, or none, to avoid mixing them.
         if any(partner[f] for f in PARTNER_ADDRESS_FIELDS_TO_SYNC):
@@ -132,3 +168,69 @@ class Lead(models.Model):
             'contact_name': contact_name or self.contact_name,
         })
         return self._convert_to_write(values)
+
+    # rewrite the whole function for the new CRM_LEAD_FIELDS_TO_SYNC list
+    def merge_opportunity(self, user_id=False, team_id=False, auto_unlink=True):
+        if len(self.ids) <= 1:
+            raise UserError(
+                _(
+                    'Please select more than one element (lead or opportunity) from the list view.'))
+
+        if len(self.ids) > 5 and not self.env.is_superuser():
+            raise UserError(_('To prevent data loss, Leads and Opportunities can only be '
+                              'merged by groups of 5.'))
+
+        opportunities = self._sort_by_confidence_level(reverse=True)
+
+        # get SORTED recordset of head and tail, and complete list
+        opportunities_head = opportunities[0]
+        opportunities_tail = opportunities[1:]
+
+        # merge all the sorted opportunity. This means the value of
+        # the first (head opp) will be a priority.
+        merged_data = opportunities._merge_data(list(CRM_LEAD_FIELDS_TO_MERGE))
+
+        # force value for salesperson and Sales Team
+        if user_id:
+            merged_data['user_id'] = user_id
+        if team_id:
+            merged_data['team_id'] = team_id
+
+        # merge other data (mail.message, attachments, ...) from tail into head
+        opportunities_head.merge_dependencies(opportunities_tail)
+
+        # check if the stage is in the stages of the Sales Team. If not, assign the stage
+        # with the lowest sequence
+        if merged_data.get('team_id'):
+            team_stage_ids = self.env['crm.stage'].search(['|',
+                                                           ('team_id', '=',
+                                                            merged_data['team_id']),
+                                                           ('team_id', '=', False)],
+                                                          order='sequence')
+            if merged_data.get('stage_id') not in team_stage_ids.ids:
+                merged_data['stage_id'] = team_stage_ids[0].id if team_stage_ids else False
+
+        # write merged data into first opportunity
+        opportunities_head.write(merged_data)
+
+        # delete tail opportunities
+        # we use the SUPERUSER to avoid access rights issues because as the user had the
+        # rights to see the records it should be safe to do so
+        if auto_unlink:
+            opportunities_tail.sudo().unlink()
+        return opportunities_head
+
+    def _prepare_customer_values(self, partner_name, is_company=False, parent_id=False):
+        """ Extract data from lead to create a partner.
+        :param partner_name : furtur name of the partner
+        :param is_company : True if the partner is a company
+        :param parent_id : id of the parent partner (False if no parent)
+
+        :return: dictionary of values to give at res_partner.create()
+        """
+        res = super(Lead, self)._prepare_customer_values(partner_name, is_company, parent_id)
+        res['facebook'] = self.facebook
+        res['linkedin'] = self.linkedin
+        res['skype'] = self.skype
+        res['whatsapp'] = self.whatsapp
+        return res
