@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import logging
-from odoo import models, fields, _, tools
+from odoo import models, fields, _
 from odoo.exceptions import UserError
-
-_logger = logging.getLogger(__name__)
 
 CRM_LEAD_FIELDS_TO_MERGE = [
     'name',

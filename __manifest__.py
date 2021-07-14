@@ -19,8 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base',
-                'contacts', 'sale', 'sales_team', 'crm'],
+    'depends': ['crm'],
 
     # always loaded
     'data': [
@@ -32,7 +31,5 @@
         'security/custom_crm_security.xml'
     ],
     # only loaded in demonstration mode
-    'demo': [
-        # 'demo/demo.xml',
-    ],
+    'demo': [],
 }
